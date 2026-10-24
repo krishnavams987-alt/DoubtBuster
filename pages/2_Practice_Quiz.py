@@ -17,8 +17,8 @@ if st.button("Generate practice problem", type="primary"):
                     question=f"Create one {level.lower()} practice question about {topic}. Include a worked solution and answer key after the question.",
                     subject=subject, topic=topic, level=level,
                     mode="Practice question with answer key", language="English", attempt="",
-                    api_key=get_setting("OPENAI_API_KEY"),
-                    model=get_setting("OPENAI_MODEL", "gpt-4o-mini"),
+                    api_key=get_setting("GEMINI_API_KEY"),
+                    model=get_setting("GEMINI_MODEL", "gemini-2.5-flash"),
                 )
             st.markdown(result)
         except Exception as exc:
