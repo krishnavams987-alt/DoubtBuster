@@ -1,20 +1,52 @@
-from openai import OpenAI
 
-def ask_llm(prompt: str, api_key: str, model: str = "gpt-4o-mini") -> str:
+from google import genai
+
+
+def ask_llm(
+    prompt: str,
+    api_key: str,
+    model: str = "gemini-2.5-flash",
+) -> str:
+    """Generate a tutoring response using the Gemini API."""
+
     if not api_key:
         raise ValueError(
-            "OPENAI_API_KEY is missing. Add it to your local .env file or "
-            "Streamlit Community Cloud app Settings → Secrets. You can still review "
-            "the project UI, but AI answers require an API key."
+            "GEMINI_API_KEY is missing. Add it to your .env file "
+            "or Streamlit Cloud Secrets."
         )
-    client = OpenAI(api_key=api_key, timeout=45.0, max_retries=2)
-    response = client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": "You are DoubtBuster, a careful and supportive tutor for GMRIT undergraduate students. Teach reasoning rather than merely giving answers. Be transparent about uncertainty. Never invent citations or claim code was executed when it was not."},
-            {"role": "user", "content": prompt},
-        ],
-        temperature=0.3,
-    )
-    content = response.choices[0].message.content
-    return content.strip() if content else "I couldn't generate a response. Please rephrase your question."
+
+    client = genai.Client(api_key=api_key)
+
+    full_prompt = f"""
+You are DoubtBuster, an AI tutor for GMRIT undergraduate students.
+
+Your responsibilities:
+- Explain concepts in clear, simple English.
+- Teach step by step instead of only giving the final answer.
+- Help students understand programming, mathematics, and AI topics.
+- Explain code errors and suggest corrections.
+- Give examples when useful.
+- Be honest when you are uncertain.
+- Never invent citations or claim code was executed if it was not.
+
+Student's question:
+{prompt}
+"""
+
+    try:
+        response = client.models.generate_content(
+            model=model,
+            contents=full_prompt,
+        )
+
+        answer = response.text
+
+        if not answer:
+            raise RuntimeError(
+                "Gemini returned an empty response. Please try again."
+            )
+
+        return answer.strip()
+
+    finally:
+        client.close()
