@@ -60,8 +60,9 @@ if ask:
                 mode=mode,
                 language=language,
                 attempt=user_attempt.strip(),
-                api_key=get_setting("OPENAI_API_KEY"),
-                model=get_setting("OPENAI_MODEL", "gpt-4o-mini"),
+                api_key=get_setting("GEMINI_API_KEY"),
+                model=get_setting("GEMINI_MODEL", "gemini-2.5-flash"),
+                
             )
         st.session_state["last_question"] = combined_question
         st.session_state["last_result"] = result
@@ -84,8 +85,8 @@ if st.session_state.get("last_result"):
                     question=f"Create one similar practice problem based on this question. Include the problem first, then a separate answer key with worked solution. Original question:\n{st.session_state.get('last_question','')}",
                     subject=st.session_state.get("last_subject", subject),
                     topic=topic.strip(), level=level, mode="Practice question with answer key",
-                    language=language, attempt="", api_key=get_setting("OPENAI_API_KEY"),
-                    model=get_setting("OPENAI_MODEL", "gpt-4o-mini"),
+                    language=language, attempt="", api_key=get_setting("GEMINI_API_KEY"),
+                    model=get_setting("GEMINI_MODEL", "gemini-2.5-flash"),
                 )
                 st.markdown(practice)
             except Exception as exc:
