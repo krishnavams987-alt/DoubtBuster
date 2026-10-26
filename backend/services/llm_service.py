@@ -2,18 +2,23 @@
 from google import genai
 
 
+DEFAULT_MODEL = "gemini-3.8-flash"
+
+
 def ask_llm(
     prompt: str,
     api_key: str,
-    model: str = "gemini-2.5-flash",
+    model: str = DEFAULT_MODEL,
 ) -> str:
     """Generate a tutoring response using the Gemini API."""
 
     if not api_key:
         raise ValueError(
-            "GEMINI_API_KEY is missing. Add it to your .env file "
-            "or Streamlit Cloud Secrets."
+            "GEMINI_API_KEY is missing. Add it to your "
+            "Streamlit Cloud Secrets."
         )
+
+    selected_model = (model or DEFAULT_MODEL).strip()
 
     client = genai.Client(api_key=api_key)
 
@@ -35,13 +40,13 @@ Student's question:
 
     try:
         response = client.models.generate_content(
-            model=model,
+            model=selected_model,
             contents=full_prompt,
         )
 
         answer = response.text
 
-        if not answer:
+        if not answer or not answer.strip():
             raise RuntimeError(
                 "Gemini returned an empty response. Please try again."
             )
